@@ -3,11 +3,21 @@ import numpy as np
 import operator
 from functools import reduce
 
+class Observation_space:
+    def __init__(self, state_space):
+        self.state_space = state_space
+        self.n = state_space.size
+
+class Action_space:
+    def __init__(self, action_space):
+        self.action_space = action_space
+        self.n = action_space.size
+
 class side_walk_env:
     def __init__(self,nx,ny,upper_border,lower_border,p_obstacle,p_litter):
         "The action space is discrete with 4 actions: 0: left, 1: right, 2: up, 3: down"
         self.state = 0
-        self.action_space = np.array([0, 1, 2, 3])
+        self.action_space = Action_space(np.array([0, 1, 2, 3]))
         self.reward = 0
         self.done = False
         self.info = {} # for debugging
@@ -29,14 +39,15 @@ class side_walk_env:
         self.reward = 0
         self.done = False
         self.info = {} 
-        return self.state
+        return self.state, self.reward, self.done, self.info
 
     def position_to_state(self,current_position,ob_bo):
         right = current_position + np.array([0,1])
         left = current_position + np.array([0,-1])
         down = current_position + np.array([-1,0])
         up = current_position + np.array([1,0])
-        state = 2**0 * (self.roadmap[up[0], up[1]]==ob_bo) + 2**1 * (self.roadmap[down[0], down[1]]==ob_bo) + 2**2 * (self.roadmap[left[0], left[1]]==ob_bo) + 2**3 * (self.roadmap[right[0], right[1]]==ob_bo)
+        state = (2**0 * int(self.roadmap[up[0], up[1]]==ob_bo) + 2**1 * int(self.roadmap[down[0], down[1]]==ob_bo) 
+            + 2**2 * int(self.roadmap[left[0], left[1]]==ob_bo) + 2**3 * int(self.roadmap[right[0], right[1]]==ob_bo))
         return state
 
     def render(self):
@@ -67,7 +78,7 @@ class side_walk_env:
 class side_walk_env_with_obstacle(side_walk_env):
     def __init__(self,nx,ny,upper_border,lower_border,p_obstacle,p_litter=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
-        self.observation_space = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
 
     def step(self, action):
         current_position = self.current_position
@@ -110,7 +121,7 @@ class side_walk_env_with_obstacle(side_walk_env):
         else:
             raise ValueError('Invalid action')
 
-        return self.state, self.reward, self.done, self.info
+        return self.state, self.reward, self.current_position, self.done, self.info
 
     def render(self):
         print('state: ', self.state)
@@ -119,7 +130,7 @@ class side_walk_env_with_obstacle(side_walk_env):
 class side_walk_env_with_litter(side_walk_env):
     def __init__(self,nx,ny,upper_border,lower_border,p_litter,p_obstacle=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
-        self.observation_space = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
 
     def step(self, action):
         current_position = self.current_position
@@ -173,7 +184,7 @@ class side_walk_env_stay_on_road(side_walk_env):
         "The rows inbetween the upper and lower border (defined as half integers) are area where the agent can move. We assume that the agent can move in the rows"
         "above and below the upper and lower border but with a penalty of -10."
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
-        self.observation_space = np.array([0, 1, 2, 3, 4, 5, 6])
+        self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6]))
 
     def position_to_state(self,current_position):
         if current_position[0]-1 > self.upper_border: # above upper border

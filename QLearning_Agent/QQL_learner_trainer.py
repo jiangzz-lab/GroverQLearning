@@ -27,8 +27,9 @@ class RL_Qlearning_trainer():
                                 'max_steps': max number of steps in every epoch
                             }
     '''
-    def __init__(self, env) -> None:
+    def __init__(self, env, env_type = 'global') -> None:
         self.env = env
+        self.env_type = env_type
         self.state = env.reset()[0]
         self.action = 0
         self.state_dimension = env.observation_space.n
@@ -87,8 +88,9 @@ class RL_Qlearning_trainer():
         '''
         # eps = self.hyperparameters['eps'] # the Q_value table tolerance
         max_epochs = self.hyperparameters['max_epochs']
+        max_steps = self.hyperparameters['max_steps']
         print(max_epochs)
-        optimal_steps = self.hyperparameters['max_steps'] # initial the steps to be the max steps
+        optimal_steps = max_steps # initial the steps to be the max steps
         target_reached = False
         trajectory = []
         steps_in_all_epochs = []
@@ -102,25 +104,39 @@ class RL_Qlearning_trainer():
             target_reached = False # init target reached flag
             trajectory = [self.state] # list to record the trajectory of the current epoch
             
-            for step in range(optimal_steps): # take steps
-                print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')
-                self.action = self._take_action() # take an action
-                new_state, reward, _, done, _ = self.env.step(self.action) # step to the new state
-                if new_state == self.state:
-                    reward -= 10 # take less reward if stay in the same state
-                    done = True # no need to step more if the state cannot be changed
-                if new_state == self.state_dimension - 1:
-                    reward += 99 # take very large reward when the target is reached
-                    optimal_steps = step + 1 # update the optimal steps when the target is reached
-                    target_reached = True
-                elif not done: 
-                    reward -= 1  # when the state is changed but the target is not reached, take a moderate reward
-                self._update_Q_values(reward, new_state)
-                self._update_learner(reward, new_state)
-                trajectory.append(new_state) # append the new state to the trajectory
-                if done:
-                    break
-                self.state = new_state # update the state if it is changed
+            if self.env_type == 'global':
+                for step in range(optimal_steps): # take steps
+                    print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')
+                    self.action = self._take_action() # take an action
+                    new_state, reward, _, done, _ = self.env.step(self.action) # step to the new state
+                    if new_state == self.state:
+                        reward -= 10 # take less reward if stay in the same state
+                        done = True # no need to step more if the state cannot be changed
+                    if new_state == self.state_dimension - 1:
+                        reward += 99 # take very large reward when the target is reached
+                        optimal_steps = step + 1 # update the optimal steps when the target is reached
+                        target_reached = True
+                    elif not done: 
+                        reward -= 1  # when the state is changed but the target is not reached, take a moderate reward
+                    self._update_Q_values(reward, new_state)
+                    self._update_learner(reward, new_state)
+                    trajectory.append(new_state) # append the new state to the trajectory
+                    if done:
+                        break
+                    self.state = new_state # update the state if it is changed
+            elif self.env_type == 'local':
+                for step in range(max_steps): # take steps
+                    print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')
+                    self.action = self._take_action() # take an action
+                    new_state, reward, _, done, _ = self.env.step(self.action) # step to the new state
+                    self._update_Q_values(reward, new_state)
+                    self._update_learner(reward, new_state)
+                    trajectory.append(new_state) # append the new state to the trajectory
+                    if done:
+                        break
+                    self.state = new_state # update the state if it is changed
+            else:
+                raise ValueError('Invalid environment type')
 
             steps_in_all_epochs.append(optimal_steps)
             target_reached_in_all_epochs.append(target_reached)
@@ -144,8 +160,8 @@ class GroverQlearner(RL_Qlearning_trainer):
     action_circuits (1D np array): action quantum circuits for all states; action_circuits[s] records the quanutm circuit encoding the up-to-date action wavefunction of state s
     backend: machine to execute the quanutm circuit jobs; could be either a simulator or a true quantum computer
     '''
-    def __init__(self, env):
-        super().__init__(env)
+    def __init__(self, env, **kwargs):
+        super().__init__(env, **kwargs)
         self.action_qregister_size = ceil(np.log2(self.action_dimension))
         self.max_grover_length = int(round(np.pi / (4 * np.arcsin(1. / np.sqrt(2 ** self.action_qregister_size))) - 0.5))
         self.grover_lengths = np.zeros((self.state_dimension, self.action_dimension), dtype=int)
@@ -230,8 +246,8 @@ class ClassicalLearner(RL_Qlearning_trainer):
     '''
     Classical Q-learning algorithm
     '''
-    def __init__(self, env):
-        super().__init__(env)
+    def __init__(self, env, **kwargs):
+        super().__init__(env, **kwargs)
 
     def _take_action(self):
         '''

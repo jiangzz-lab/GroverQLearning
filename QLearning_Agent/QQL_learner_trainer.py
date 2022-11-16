@@ -98,13 +98,14 @@ class RL_Qlearning_trainer():
         trajectories_in_all_epochs = [] # stores 
 
         for epoch in range(max_epochs):
-            if epoch % 10 == 0:
+            if epoch % 50 == 0:
                 print("Processing epoch {} ...".format(epoch)) # monitor the training process
-            self.state = self.env.reset()[0] # reset env
+            
             target_reached = False # init target reached flag
             trajectory = [self.state] # list to record the trajectory of the current epoch
             
             if self.env_type == 'global':
+                self.state = self.env.reset()[0] # reset env
                 for step in range(optimal_steps): # take steps
                     print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')
                     self.action = self._take_action() # take an action
@@ -125,6 +126,10 @@ class RL_Qlearning_trainer():
                         break
                     self.state = new_state # update the state if it is changed
             elif self.env_type == 'local':
+                if epoch % int(max_epochs/5) == 0:
+                    self.env.update_env()
+                    print('Updating environment ...')
+                self.state = self.env.reset()[0] # reset initial state
                 for step in range(max_steps): # take steps
                     print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')
                     self.action = self._take_action() # take an action

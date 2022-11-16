@@ -41,6 +41,9 @@ class side_walk_env:
         roadmap = np.insert(roadmap, 0, 0, axis=0)
         return roadmap
 
+    def update_env(self):
+        self.roadmap = self.generate_roadmap()
+
     def reset(self):
         self.current_position = self._init_position()
         self.state = 0
@@ -105,78 +108,77 @@ class side_walk_env_with_obstacle(side_walk_env):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
         self.position_obstacles = [[np.where(self.roadmap == 1)[0][i], np.where(self.roadmap == 1)[1][i]] for i in range(len(np.where(self.roadmap == 1)[0]))]
         self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-        self.Reward = self._reward_function()
+        # self.Reward = self._reward_function()
 
-    def _reward_function(self):
-        # 0:move forward; 1:move backward; 2:move upward; 3:move downward. And we have 16 different states
-        possible_actions = [[i for i in range(self.action_space.n)] for j in range(self.observation_space.n)]
-        Reward = np.zeros((self.observation_space.n,self.action_space.n))
-        for state, actions in enumerate(possible_actions):
-            for action in actions:
-                if action == 0:
-                    if state%2 == 1:
-                        Reward[state, action] = -10
-                    else:
-                        Reward[state, action] = 6
-                elif action == 1:
-                    if (state%8==4) or (state%8==5) or (state%8==6) or (state%8==7):
-                        Reward[state, action] = -15
-                    else:
-                        Reward[state, action] = 0
-                elif action == 2:
-                    if (state%4==2) or (state%4==3):
-                        Reward[state, action] = -10
-                    else:
-                        Reward[state, action] = 3.5
-                else:
-                    if state > 7:
-                        Reward[state, action] = -10
-                    else:
-                        Reward[state, action] = 3.5 
-        return Reward
+    # def _reward_function(self):
+    #     # 0:move forward; 1:move backward; 2:move upward; 3:move downward. And we have 16 different states
+    #     possible_actions = [[i for i in range(self.action_space.n)] for j in range(self.observation_space.n)]
+    #     Reward = np.zeros((self.observation_space.n,self.action_space.n))
+    #     for state, actions in enumerate(possible_actions):
+    #         for action in actions:
+    #             if action == 0:
+    #                 if state%2 == 1:
+    #                     Reward[state, action] = -10
+    #                 else:
+    #                     Reward[state, action] = 6
+    #             elif action == 1:
+    #                 if (state%8==4) or (state%8==5) or (state%8==6) or (state%8==7):
+    #                     Reward[state, action] = -15
+    #                 else:
+    #                     Reward[state, action] = 0
+    #             elif action == 2:
+    #                 if (state%4==2) or (state%4==3):
+    #                     Reward[state, action] = -10
+    #                 else:
+    #                     Reward[state, action] = 3.5
+    #             else:
+    #                 if state > 7:
+    #                     Reward[state, action] = -10
+    #                 else:
+    #                     Reward[state, action] = 3.5 
+    #     return Reward
 
     def step(self, action):
         current_position = self.current_position
+        panelity = -15
         if current_position[0] == self.nx-1:
             self.done = True
-            self.reward = 100
+            self.reward = 10
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
-            self.state = self.position_to_state(next_position,self.position_obstacles)
-            self.current_position = next_position
-            # if self.roadmap[next_position[0], next_position[1]] == 1:
-            #     self.reward = -50
-            # elif self.roadmap[next_position[0], next_position[1]] == 0:
-            #     self.reward = -2
+            next_state = self.position_to_state(next_position,self.position_obstacles)
+            if next_position in self.position_obstacles:
+                self.reward = panelity
+            else:
+                self.reward = -6
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
-            self.state = self.position_to_state(next_position,self.position_obstacles)
-            self.current_position = next_position
-            # if self.roadmap[next_position[0], next_position[1]] == 1:
-            #     self.reward = -50
-            # elif self.roadmap[next_position[0], next_position[1]] == 0:
-            #     self.reward = 2
+            next_state = self.position_to_state(next_position,self.position_obstacles)
+            if next_position in self.position_obstacles:
+                self.reward = panelity
+            else:
+                self.reward = 3
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
-            self.state = self.position_to_state(next_position,self.position_obstacles)
-            self.current_position = next_position
-            # if self.roadmap[next_position[0], next_position[1]] == 1:
-            #     self.reward = -50
-            # elif self.roadmap[next_position[0], next_position[1]] == 0:
-            #     self.reward = 0
+            next_state = self.position_to_state(next_position,self.position_obstacles)
+            if next_position in self.position_obstacles:
+                self.reward = panelity
+            else:
+                self.reward = 0
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
-            self.state = self.position_to_state(next_position,self.position_obstacles)
-            self.current_position = next_position
-            # if self.roadmap[next_position[0], next_position[1]] == 1:
-            #     self.reward = -100
-            # elif self.roadmap[next_position[0], next_position[1]] == 0:
-            #     self.reward = 0
+            next_state = self.position_to_state(next_position,self.position_obstacles)
+            if next_position in self.position_obstacles:
+                self.reward = panelity
+            else:
+                self.reward = 0
         else:
             raise ValueError('Invalid action')
 
-        self.reward = self.Reward[self.state, action]
+        # self.reward = self.Reward[self.state, action]
+        self.state = next_state
+        self.current_position = next_position
 
         return self.state, self.reward, self.current_position, self.done, self.info
 
@@ -202,44 +204,42 @@ class side_walk_env_with_litter(side_walk_env):
         current_position = self.current_position
         if current_position[0] == self.nx-1:
             self.done = True
-            self.reward = 100
-            return self.state, self.reward, self.done, self.info
-        if action == 0: # move backward
+            self.reward = 10
+            return self.state, self.reward, self.current_position, self.done, self.info
+        if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
-            self.state = self.position_to_state(next_position,self.position_litter)
-            self.current_position = next_position
-            if self.roadmap[next_position[0], next_position[1]] == 2:
-                self.reward = 10
-            elif self.roadmap[next_position[0], next_position[1]] == 0:
+            next_state = self.position_to_state(next_position,self.position_litter)
+            if next_position in self.position_litter:
+                self.reward = 5
+            else:
                 self.reward = -2
-        elif action == 1: # move forward
+        elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
-            self.state = self.position_to_state(next_position,self.position_litter)
-            self.current_position = next_position
-            if self.roadmap[next_position[0], next_position[1]] == 2:
+            next_state = self.position_to_state(next_position,self.position_litter)
+            if next_position in self.position_litter:
                 self.reward = 10
-            elif self.roadmap[next_position[0], next_position[1]] == 0:
+            else:
                 self.reward = 2
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
-            self.state = self.position_to_state(next_position,self.position_litter)
-            self.current_position = next_position
-            if self.roadmap[next_position[0], next_position[1]] == 2:
+            next_state = self.position_to_state(next_position,self.position_litter)
+            if next_position in self.position_litter:
                 self.reward = 10
-            elif self.roadmap[next_position[0], next_position[1]] == 0:
+            else:
                 self.reward = 0
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
-            self.state = self.position_to_state(next_position,self.position_litter)
-            self.current_position = next_position
-            if self.roadmap[next_position[0], next_position[1]] == 2:
+            next_state = self.position_to_state(next_position,self.position_litter)
+            if next_position in self.position_litter:
                 self.reward = 10
-            elif self.roadmap[next_position[0], next_position[1]] == 0:
+            else:
                 self.reward = 0
         else:
             raise ValueError('Invalid action')
 
-        return self.state, self.reward, self.done, self.info
+        self.state = next_state
+        self.current_position = next_position
+        return self.state, self.reward, self.current_position, self.done, self.info
 
     def reset(self):
         self.current_position = self._init_position()
@@ -281,7 +281,7 @@ class side_walk_env_stay_on_road(side_walk_env):
         current_position = self.current_position
         if current_position[0] == self.nx-1:
             self.done = True
-            self.reward = 100
+            self.reward = 10
             return self.state, self.reward, self.done, self.info
         current_state = self.state
         if action == 0: # move backward

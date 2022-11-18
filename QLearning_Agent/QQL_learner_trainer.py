@@ -102,9 +102,9 @@ class RL_Qlearning_trainer():
                 print("Processing epoch {} ...".format(epoch)) # monitor the training process
             
             target_reached = False # init target reached flag
-            trajectory = [self.state] # list to record the trajectory of the current epoch
             
             if self.env_type == 'global':
+                trajectory = [self.state] # list to record the trajectory of the current epoch
                 self.state = self.env.reset()[0] # reset env
                 for step in range(optimal_steps): # take steps
                     print('Taking step {0}/{1}'.format(step, optimal_steps), end='\r')

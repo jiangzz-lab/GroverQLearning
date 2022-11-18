@@ -45,12 +45,13 @@ class side_walk_env:
         self.roadmap = self.generate_roadmap()
 
     def reset(self):
-        self.current_position = self._init_position()
-        self.state = 0
-        self.reward = 0
-        self.done = False
-        self.info = {} 
-        return self.state, self.reward, self.done, self.info
+        # self.current_position = self._init_position()
+        # self.state = 0
+        # self.reward = 0
+        # self.done = False
+        # self.info = {} 
+        # return self.state, self.reward, self.done, self.info
+        pass
 
     def position_to_state(self,current_position,position_objects):
         # position_obstacles = [[objects_position[0][i], objects_position[1][i]] for i in range(len(objects_position[0]))]
@@ -86,6 +87,9 @@ class side_walk_env:
         plt.scatter([0 for i in range(self.lower_border,self.upper_border+1,2)],[i for i in range(self.lower_border,self.upper_border+1,2)], marker='>',zorder=50)
         plt.title('Road Map')
 
+    def trajectory(self):
+        pass
+
     def plot_roadmap_with_trajectory(self,task,trajectory):
         x = [[i] for i in range(self.nx)]
         road = [[i for i in range(self.ny)] for j in range(self.nx)]
@@ -108,35 +112,6 @@ class side_walk_env_with_obstacle(side_walk_env):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
         self.position_obstacles = [[np.where(self.roadmap == 1)[0][i], np.where(self.roadmap == 1)[1][i]] for i in range(len(np.where(self.roadmap == 1)[0]))]
         self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-        # self.Reward = self._reward_function()
-
-    # def _reward_function(self):
-    #     # 0:move forward; 1:move backward; 2:move upward; 3:move downward. And we have 16 different states
-    #     possible_actions = [[i for i in range(self.action_space.n)] for j in range(self.observation_space.n)]
-    #     Reward = np.zeros((self.observation_space.n,self.action_space.n))
-    #     for state, actions in enumerate(possible_actions):
-    #         for action in actions:
-    #             if action == 0:
-    #                 if state%2 == 1:
-    #                     Reward[state, action] = -10
-    #                 else:
-    #                     Reward[state, action] = 6
-    #             elif action == 1:
-    #                 if (state%8==4) or (state%8==5) or (state%8==6) or (state%8==7):
-    #                     Reward[state, action] = -15
-    #                 else:
-    #                     Reward[state, action] = 0
-    #             elif action == 2:
-    #                 if (state%4==2) or (state%4==3):
-    #                     Reward[state, action] = -10
-    #                 else:
-    #                     Reward[state, action] = 3.5
-    #             else:
-    #                 if state > 7:
-    #                     Reward[state, action] = -10
-    #                 else:
-    #                     Reward[state, action] = 3.5 
-    #     return Reward
 
     def step(self, action):
         current_position = self.current_position
@@ -189,6 +164,26 @@ class side_walk_env_with_obstacle(side_walk_env):
         self.done = False
         self.info = {} 
         return self.state, self.current_position, self.reward, self.done, self.info
+    
+    def trajectory(self, Q_values):
+        self.update_env()
+        self.reset()
+        self.position_obstacles = [[np.where(self.roadmap == 1)[0][i], np.where(self.roadmap == 1)[1][i]] for i in range(len(np.where(self.roadmap == 1)[0]))]
+        trajectory_x = []
+        trajectory_y = []
+        trajectory_x.append(self.current_position[0])
+        trajectory_y.append(self.current_position[1])
+        n_step = 0
+        while self.done == False and self.current_position[1] <= self.ny-1 and self.current_position[1] >= 0 and n_step < 4*self.nx:
+            self.state = self.position_to_state(self.current_position, self.position_obstacles)
+            # print(self.state)
+            action = np.argmax(Q_values[self.state,:])
+            self.step(action)
+            trajectory_x.append(self.current_position[0])
+            trajectory_y.append(self.current_position[1])
+            n_step += 1
+        print('Done')
+        return [trajectory_x, trajectory_y]
 
     def render(self):
         print('state: ', self.state)
@@ -202,6 +197,7 @@ class side_walk_env_with_litter(side_walk_env):
 
     def step(self, action):
         current_position = self.current_position
+        reward = 15
         if current_position[0] == self.nx-1:
             self.done = True
             self.reward = 10
@@ -212,26 +208,26 @@ class side_walk_env_with_litter(side_walk_env):
             if next_position in self.position_litter:
                 self.reward = 5
             else:
-                self.reward = -2
+                self.reward = -5
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
-                self.reward = 10
+                self.reward = reward
             else:
                 self.reward = 2
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
-                self.reward = 10
+                self.reward = reward
             else:
                 self.reward = 0
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
-                self.reward = 10
+                self.reward = reward
             else:
                 self.reward = 0
         else:
@@ -248,6 +244,26 @@ class side_walk_env_with_litter(side_walk_env):
         self.done = False
         self.info = {} 
         return self.state, self.current_position, self.reward, self.done, self.info
+
+    def trajectory(self, Q_values):
+        self.update_env()
+        self.reset()
+        self.position_litter = [[np.where(self.roadmap == 2)[0][i], np.where(self.roadmap == 2)[1][i]] for i in range(len(np.where(self.roadmap == 2)[0]))]
+        trajectory_x = []
+        trajectory_y = []
+        trajectory_x.append(self.current_position[0])
+        trajectory_y.append(self.current_position[1])
+        n_step = 0
+        while self.done == False and self.current_position[1] <= self.ny-1 and self.current_position[1] >= 0 and n_step < 4*self.nx:
+            self.state = self.position_to_state(self.current_position, self.position_litter)
+            # print(self.state)
+            action = np.argmax(Q_values[self.state,:])
+            self.step(action)
+            trajectory_x.append(self.current_position[0])
+            trajectory_y.append(self.current_position[1])
+            n_step += 1
+        print('Done')
+        return [trajectory_x, trajectory_y]
 
     def render(self):
         print('state: ', self.state)

@@ -200,26 +200,29 @@ class side_walk_env_with_litter(side_walk_env):
         reward = 15
         if current_position[0] == self.nx-1:
             self.done = True
-            self.reward = 10
+            self.reward = 20
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
-                self.reward = 5
+                self.position_litter.remove(next_position)
+                self.reward = -5
             else:
                 self.reward = -5
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
+                self.position_litter.remove(next_position)
                 self.reward = reward
             else:
-                self.reward = 2
+                self.reward = 5
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
+                self.position_litter.remove(next_position)
                 self.reward = reward
             else:
                 self.reward = 0
@@ -227,6 +230,7 @@ class side_walk_env_with_litter(side_walk_env):
             next_position = [current_position[0], current_position[1] - 1]
             next_state = self.position_to_state(next_position,self.position_litter)
             if next_position in self.position_litter:
+                self.position_litter.remove(next_position)
                 self.reward = reward
             else:
                 self.reward = 0
@@ -239,6 +243,7 @@ class side_walk_env_with_litter(side_walk_env):
 
     def reset(self):
         self.current_position = self._init_position()
+        self.position_litter = [[np.where(self.roadmap == 2)[0][i], np.where(self.roadmap == 2)[1][i]] for i in range(len(np.where(self.roadmap == 2)[0]))]
         self.state = self.position_to_state(self.current_position,self.position_litter)
         self.reward = 0
         self.done = False

@@ -184,10 +184,10 @@ class side_walk_env_with_obstacle(side_walk_env):
         Performs an action and returns the next state, the next position, the reward, a boolean indicating if the episode is finished, and the information
         '''
         current_position = self.current_position
-        panelity = -15
-        if current_position[0] == self.nx-1:
+        panelity = -3
+        if current_position[0] == self.nx-1 or current_position[1] == 0 or current_position[1] == self.ny-1:
             self.done = True
-            self.reward = 10
+            self.reward = 0
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
@@ -195,28 +195,28 @@ class side_walk_env_with_obstacle(side_walk_env):
             if next_position in self.position_obstacles:
                 self.reward = panelity
             else:
-                self.reward = -6
+                self.reward = 1
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
             next_state = self.position_to_state(next_position,self.position_obstacles)
             if next_position in self.position_obstacles:
                 self.reward = panelity
             else:
-                self.reward = 3
+                self.reward = 8
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
             next_state = self.position_to_state(next_position,self.position_obstacles)
             if next_position in self.position_obstacles:
                 self.reward = panelity
             else:
-                self.reward = 0
+                self.reward = 3
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
             next_state = self.position_to_state(next_position,self.position_obstacles)
             if next_position in self.position_obstacles:
                 self.reward = panelity
             else:
-                self.reward = 0
+                self.reward = 3
         else:
             raise ValueError('Invalid action')
 
@@ -286,9 +286,9 @@ class side_walk_env_with_litter(side_walk_env):
         '''
         current_position = self.current_position
         reward = 15
-        if current_position[0] == self.nx-1:
+        if current_position[0] == self.nx-1 or current_position[1] == 0 or current_position[1] == self.ny-1:
             self.done = True
-            self.reward = 20
+            self.reward = 0
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
@@ -397,10 +397,10 @@ class side_walk_env_stay_on_road(side_walk_env):
         Performs a step in the environment
         '''
         current_position = self.current_position
-        if current_position[0] == self.nx-1:
+        if current_position[0] == self.nx-1 or current_position[1] == 0 or current_position[1] == self.ny-1:
             self.done = True
-            self.reward = 10
-            return self.state, self.reward, self.done, self.info
+            self.reward = 0
+            return self.state, self.reward, self.current_position, self.done, self.info
         current_state = self.state
         if action == 0: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
@@ -449,7 +449,7 @@ class side_walk_env_stay_on_road(side_walk_env):
         else:
             raise ValueError('Invalid action')
 
-        return self.state, self.reward, self.done, self.info
+        return self.state, self.reward, self.current_position, self.done, self.info
 
     def reset(self):
         '''

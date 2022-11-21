@@ -127,6 +127,9 @@ class RL_Qlearning_trainer():
                     if done:
                         break
                     self.state = new_state # update the state if it is changed
+                steps_in_all_epochs.append(optimal_steps)
+                target_reached_in_all_epochs.append(target_reached)
+                trajectories_in_all_epochs.append(trajectory)
             elif self.env_type == 'local':
                 if epoch % int(max_epochs/5) == 0:
                     self.env.update_env()
@@ -138,16 +141,12 @@ class RL_Qlearning_trainer():
                     new_state, reward, _, done, _ = self.env.step(self.action) # step to the new state
                     self._update_Q_values(reward, new_state)
                     self._update_learner(reward, new_state)
-                    trajectory.append(new_state) # append the new state to the trajectory
+                    # trajectory.append(new_state) # append the new state to the trajectory
                     if done:
                         break
                     self.state = new_state # update the state if it is changed
             else:
                 raise ValueError('Invalid environment type')
-
-            steps_in_all_epochs.append(optimal_steps)
-            target_reached_in_all_epochs.append(target_reached)
-            trajectories_in_all_epochs.append(trajectory)
 
         return steps_in_all_epochs, target_reached_in_all_epochs, trajectories_in_all_epochs
 

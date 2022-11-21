@@ -15,6 +15,8 @@ class RL_Qlearning_trainer():
 
     Parameters:
     env: the environment to solve; default is OpenAI gym "FrozenLake"
+    env_type: the type of the environment; default is 'global' (i.e. the observed environment is the whole system, which is always fixed). 
+              The other option is 'local' (i.e. the observed environment is the local environment of the agent, which is changing with the agent's movement)
     state (int): current state
     action (int): current action 
     state_dimension (int): dimension of the state space
@@ -250,6 +252,7 @@ class GroverQlearner(RL_Qlearning_trainer):
 class ClassicalLearner(RL_Qlearning_trainer):
     '''
     Classical Q-learning algorithm
+    env: the environment passed to the super class
     '''
     def __init__(self, env, **kwargs):
         super().__init__(env, **kwargs)

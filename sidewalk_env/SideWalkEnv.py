@@ -40,6 +40,7 @@ class side_walk_env:
     reward: reward of the agent after taking an action
     done: boolean variable indicating whether the agent has reached the end of the road
     info: for debugging
+    object_index: index of the object (1: obstacle, 2: litter); default is None
     p_obstacle: probability of an obstacle appearing in the road
     p_litter: probability of litter appearing in the road
     position_obstacles: position of the obstacles in the road
@@ -57,6 +58,7 @@ class side_walk_env:
         self.reward = 0
         self.done = False
         self.info = {} # for debugging
+        self.object_index = None
         self.p_obstacle = p_obstacle
         self.p_litter = p_litter
         self.position_obstacles = None
@@ -93,9 +95,16 @@ class side_walk_env:
 
     def reset(self):
         '''
-        Resets the environment
+        Resets the initial state of the agent
         '''
-        pass
+        self.current_position = self._init_position()
+        self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 
+            for i in range(len(np.where(self.roadmap == self.object_index)[0]))])
+        self.state = self.position_to_state(self.current_position,self.position_objects)
+        self.reward = 0
+        self.done = False
+        self.info = {} 
+        return self.state, self.current_position, self.reward, self.done, self.info
 
     def position_to_state(self,current_position,position_objects):
         '''
@@ -126,9 +135,9 @@ class side_walk_env:
         Plots the roadmap of the road
         '''
         x = [[i] for i in range(self.nx)]
-        road = [[i for i in range(self.ny)] for j in range(self.nx)]
-        road_up = [[self.upper_border] for i in range(self.nx)]
-        road_low = [[self.lower_border] for i in range(self.nx)]
+        road = [[i for i in range(self.ny)] for _ in range(self.nx)]
+        road_up = [[self.upper_border] for _ in range(self.nx)]
+        road_low = [[self.lower_border] for _ in range(self.nx)]
         obstacle = np.array([np.where(self.roadmap == 1)[0], np.where(self.roadmap == 1)[1]])
         litter = np.array([np.where(self.roadmap == 2)[0], np.where(self.roadmap == 2)[1]])
         plt.figure(figsize=(15,4))
@@ -137,32 +146,43 @@ class side_walk_env:
         plt.plot(np.array(x), (np.array(road_up)+np.array(road_low))/2, linestyle='--', color = "y", linewidth = 3, zorder=30)
         plt.scatter(obstacle[0], obstacle[1], marker='x', color = 'k', zorder=40)
         plt.scatter(litter[0], litter[1], marker='s', color='r', zorder=40)
-        plt.scatter([0 for i in range(self.lower_border,self.upper_border+1,2)],[i for i in range(self.lower_border,self.upper_border+1,2)], marker='>',zorder=50)
+        plt.scatter([0 for _ in range(self.lower_border,self.upper_border+1,2)],[i for i in range(self.lower_border,self.upper_border+1,2)], marker='>',zorder=50)
         plt.title('Road Map')
 
-    def trajectory(self):
+    def trajectory(self, Q_values):
         '''
-        Returns the trajectory of the agent
+        Returns the trajectory of the agent given the Q_values
         '''
-        pass
+        self.update_env()
+        self.reset()
+        self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 
+            for i in range(len(np.where(self.roadmap == self.object_index)[0]))])
+        trajectory_x = []
+        trajectory_y = []
+        trajectory_x.append(self.current_position[0])
+        trajectory_y.append(self.current_position[1])
+        n_step = 0
+        while self.done == False and n_step < 4*self.nx:
+            self.state = self.position_to_state(self.current_position, self.position_objects)
+            # print(self.state)
+            action = np.argmax(Q_values[self.state,:])
+            self.step(action)
+            trajectory_x.append(self.current_position[0])
+            trajectory_y.append(self.current_position[1])
+            n_step += 1
+        if self.current_position[0] == self.nx-1:
+            print('The agent reached the end of the road')
+        elif self.current_position[1] == self.ny-1 or self.current_position[1] == 0:
+            print('The agent is out of the road')
+        else:
+            print('The agent is stuck')
+        return [trajectory_x, trajectory_y]
 
     def plot_roadmap_with_trajectory(self,task,trajectory):
         '''
         Plots the roadmap of the road with the trajectory of the agent
         '''
-        x = [[i] for i in range(self.nx)]
-        road = [[i for i in range(self.ny)] for j in range(self.nx)]
-        road_up = [[self.upper_border] for i in range(self.nx)]
-        road_low = [[self.lower_border] for i in range(self.nx)]
-        obstacle = np.array([np.where(self.roadmap == 1)[0], np.where(self.roadmap == 1)[1]])
-        litter = np.array([np.where(self.roadmap == 2)[0], np.where(self.roadmap == 2)[1]])
-        plt.figure(figsize=(15,4))
-        plt.plot(x, road, linestyle='--', color = "0.7", zorder=10)
-        plt.fill_between(reduce(operator.add, x), reduce(operator.add, road_low), reduce(operator.add, road_up), color = '#539caf', alpha = 0.2, zorder=20)
-        plt.plot(np.array(x), (np.array(road_up)+np.array(road_low))/2, linestyle='--', color = "y", linewidth = 3, zorder=30)
-        plt.scatter(obstacle[0], obstacle[1], marker='x', color = 'k', zorder=40)
-        plt.scatter(litter[0], litter[1], marker='s', color='r', zorder=40)
-        plt.scatter([0 for i in range(self.lower_border,self.upper_border+1,2)],[i for i in range(self.lower_border,self.upper_border+1,2)], marker='>',zorder=50)
+        self.plot_roadmap()
         plt.plot(trajectory[0],trajectory[1], linestyle='-', zorder=40)
         plt.title('Road Map: ' + task)
 
@@ -171,12 +191,15 @@ class side_walk_env_with_obstacle(side_walk_env):
     Side walk environment with obstacles: arguments are the same as the side_walk_env class but with p_litter = 0
 
     Parameters:
-    position_obstacles: list of the position of the obstacles
+    object_index: index of the object (1 for obstacles, 2 for litter)
+    position_objects: list of the position of the objects
     observation_space: observation space of the agent: 16 possible states (four neighbors having an obstacle or not)
     '''
     def __init__(self,nx,ny,upper_border,lower_border,p_obstacle,p_litter=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
-        self.position_obstacles = [[np.where(self.roadmap == 1)[0][i], np.where(self.roadmap == 1)[1][i]] for i in range(len(np.where(self.roadmap == 1)[0]))]
+        self.object_index = 1 # 1: obstacle 2: litter
+        self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 
+            for i in range(len(np.where(self.roadmap == self.object_index)[0]))])
         self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
 
     def step(self, action):
@@ -191,29 +214,29 @@ class side_walk_env_with_obstacle(side_walk_env):
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
-            next_state = self.position_to_state(next_position,self.position_obstacles)
-            if next_position in self.position_obstacles:
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
                 self.reward = panelity
             else:
                 self.reward = 1
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
-            next_state = self.position_to_state(next_position,self.position_obstacles)
-            if next_position in self.position_obstacles:
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
                 self.reward = panelity
             else:
                 self.reward = 8
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
-            next_state = self.position_to_state(next_position,self.position_obstacles)
-            if next_position in self.position_obstacles:
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
                 self.reward = panelity
             else:
                 self.reward = 3
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
-            next_state = self.position_to_state(next_position,self.position_obstacles)
-            if next_position in self.position_obstacles:
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
                 self.reward = panelity
             else:
                 self.reward = 3
@@ -225,40 +248,6 @@ class side_walk_env_with_obstacle(side_walk_env):
         self.current_position = next_position
 
         return self.state, self.reward, self.current_position, self.done, self.info
-
-    def reset(self):
-        '''
-        Resets the environment
-        '''
-        self.current_position = self._init_position()
-        self.state = self.position_to_state(self.current_position,self.position_obstacles)
-        self.reward = 0
-        self.done = False
-        self.info = {} 
-        return self.state, self.current_position, self.reward, self.done, self.info
-    
-    def trajectory(self, Q_values):
-        '''
-        Returns the trajectory of the agent given the Q_values
-        '''
-        self.update_env()
-        self.reset()
-        self.position_obstacles = [[np.where(self.roadmap == 1)[0][i], np.where(self.roadmap == 1)[1][i]] for i in range(len(np.where(self.roadmap == 1)[0]))]
-        trajectory_x = []
-        trajectory_y = []
-        trajectory_x.append(self.current_position[0])
-        trajectory_y.append(self.current_position[1])
-        n_step = 0
-        while self.done == False and self.current_position[1] <= self.ny-1 and self.current_position[1] >= 0 and n_step < 4*self.nx:
-            self.state = self.position_to_state(self.current_position, self.position_obstacles)
-            # print(self.state)
-            action = np.argmax(Q_values[self.state,:])
-            self.step(action)
-            trajectory_x.append(self.current_position[0])
-            trajectory_y.append(self.current_position[1])
-            n_step += 1
-        print('Done')
-        return [trajectory_x, trajectory_y]
 
     def render(self):
         '''
@@ -272,12 +261,15 @@ class side_walk_env_with_litter(side_walk_env):
     Side walk environment with litter: arguments are the same as the side_walk_env class but with p_obstacle = 0
 
     Parameters:
-    position_litter: list of the position of the litter
+    object_index: index of the object (1 for obstacles, 2 for litter)
+    position_objects: list of the position of the objects
     observation_space: observation space of the agent: 16 possible states (four neighbors having a litter or not)
     '''
     def __init__(self,nx,ny,upper_border,lower_border,p_litter,p_obstacle=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
-        self.position_litter = [[np.where(self.roadmap == 2)[0][i], np.where(self.roadmap == 2)[1][i]] for i in range(len(np.where(self.roadmap == 2)[0]))]
+        self.object_index = 2 # 1: obstacle 2: litter
+        self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 
+            for i in range(len(np.where(self.roadmap == self.object_index)[0]))])
         self.observation_space = Observation_space(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
 
     def step(self, action):
@@ -292,33 +284,33 @@ class side_walk_env_with_litter(side_walk_env):
             return self.state, self.reward, self.current_position, self.done, self.info
         if action == 1: # move backward
             next_position = [current_position[0] - 1, current_position[1]]
-            next_state = self.position_to_state(next_position,self.position_litter)
-            if next_position in self.position_litter:
-                self.position_litter.remove(next_position)
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
+                self.position_objects.remove(next_position)
                 self.reward = -5
             else:
                 self.reward = -5
         elif action == 0: # move forward
             next_position = [current_position[0] + 1, current_position[1]]
-            next_state = self.position_to_state(next_position,self.position_litter)
-            if next_position in self.position_litter:
-                self.position_litter.remove(next_position)
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
+                self.position_objects.remove(next_position)
                 self.reward = reward
             else:
                 self.reward = 5
         elif action == 2: # move upward
             next_position = [current_position[0], current_position[1] + 1]
-            next_state = self.position_to_state(next_position,self.position_litter)
-            if next_position in self.position_litter:
-                self.position_litter.remove(next_position)
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
+                self.position_objects.remove(next_position)
                 self.reward = reward
             else:
                 self.reward = 0
         elif action == 3: # move downward
             next_position = [current_position[0], current_position[1] - 1]
-            next_state = self.position_to_state(next_position,self.position_litter)
-            if next_position in self.position_litter:
-                self.position_litter.remove(next_position)
+            next_state = self.position_to_state(next_position,self.position_objects)
+            if next_position in self.position_objects:
+                self.position_objects.remove(next_position)
                 self.reward = reward
             else:
                 self.reward = 0
@@ -328,41 +320,6 @@ class side_walk_env_with_litter(side_walk_env):
         self.state = next_state
         self.current_position = next_position
         return self.state, self.reward, self.current_position, self.done, self.info
-
-    def reset(self):
-        '''
-        Resets the environment
-        '''
-        self.current_position = self._init_position()
-        self.position_litter = [[np.where(self.roadmap == 2)[0][i], np.where(self.roadmap == 2)[1][i]] for i in range(len(np.where(self.roadmap == 2)[0]))]
-        self.state = self.position_to_state(self.current_position,self.position_litter)
-        self.reward = 0
-        self.done = False
-        self.info = {} 
-        return self.state, self.current_position, self.reward, self.done, self.info
-
-    def trajectory(self, Q_values):
-        '''
-        Returns the trajectory of the agent given the Q_values
-        '''
-        self.update_env()
-        self.reset()
-        self.position_litter = [[np.where(self.roadmap == 2)[0][i], np.where(self.roadmap == 2)[1][i]] for i in range(len(np.where(self.roadmap == 2)[0]))]
-        trajectory_x = []
-        trajectory_y = []
-        trajectory_x.append(self.current_position[0])
-        trajectory_y.append(self.current_position[1])
-        n_step = 0
-        while self.done == False and self.current_position[1] <= self.ny-1 and self.current_position[1] >= 0 and n_step < 4*self.nx:
-            self.state = self.position_to_state(self.current_position, self.position_litter)
-            # print(self.state)
-            action = np.argmax(Q_values[self.state,:])
-            self.step(action)
-            trajectory_x.append(self.current_position[0])
-            trajectory_y.append(self.current_position[1])
-            n_step += 1
-        print('Done')
-        return [trajectory_x, trajectory_y]
 
     def render(self):
         print('state: ', self.state)

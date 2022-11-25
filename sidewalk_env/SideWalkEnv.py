@@ -52,7 +52,7 @@ class side_walk_env:
     lower_border: lower border of the sidewalk
     current_position: current position of the agent in the road
     '''
-    def __init__(self,nx,ny,upper_border,lower_border,p_obstacle,p_litter):
+    def __init__(self,nx=50,ny=15,upper_border=12,lower_border=2,p_obstacle=0.1,p_litter=0.1):
         self.state = 0
         self.action_space = Action_space(np.array([0, 1, 2, 3]))
         self.reward = 0
@@ -195,7 +195,7 @@ class side_walk_env_with_obstacle(side_walk_env):
     position_objects: list of the position of the objects
     observation_space: observation space of the agent: 16 possible states (four neighbors having an obstacle or not)
     '''
-    def __init__(self,nx,ny,upper_border,lower_border,p_obstacle,p_litter=0):
+    def __init__(self,nx=50,ny=15,upper_border=12,lower_border=2,p_obstacle=0.1,p_litter=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
         self.object_index = 1 # 1: obstacle 2: litter
         self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 
@@ -265,7 +265,7 @@ class side_walk_env_with_litter(side_walk_env):
     position_objects: list of the position of the objects
     observation_space: observation space of the agent: 16 possible states (four neighbors having a litter or not)
     '''
-    def __init__(self,nx,ny,upper_border,lower_border,p_litter,p_obstacle=0):
+    def __init__(self,nx=50,ny=15,upper_border=12,lower_border=2,p_litter=0.1,p_obstacle=0):
         super().__init__(nx,ny,upper_border,lower_border,p_obstacle,p_litter)
         self.object_index = 2 # 1: obstacle 2: litter
         self.position_objects = ([[np.where(self.roadmap == self.object_index)[0][i], np.where(self.roadmap == self.object_index)[1][i]] 

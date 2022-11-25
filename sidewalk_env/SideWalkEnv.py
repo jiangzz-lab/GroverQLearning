@@ -181,6 +181,8 @@ class side_walk_env:
     def plot_roadmap_with_trajectory(self,task,trajectory):
         '''
         Plots the roadmap of the road with the trajectory of the agent
+        task (str): 'avoiding obstacle' or 'picking up litter'
+        trajectory (list): list of the x and y coordinates of the trajectory
         '''
         self.plot_roadmap()
         plt.plot(trajectory[0],trajectory[1], linestyle='-', zorder=40)

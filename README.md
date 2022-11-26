@@ -51,8 +51,9 @@ plt.xlabel('Epoch')
 plt.ylabel('Target Reached')
 plt.show()
 ~~~
+<img src="./Resources/frozenlake_step_vs_epoch.png"
+     style="float: left; margin-right: 10px;" />
 <img src="./Resources/frozenlake_goalReached_vs_epoch.png"
-     alt="Markdown Monster icon"
      style="float: left; margin-right: 10px;" />
 
 3. Train the Grover agent with the custome sidewalk environment <br />

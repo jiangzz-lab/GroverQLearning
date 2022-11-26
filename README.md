@@ -65,8 +65,6 @@ run the following code in a python notebook
 ~~~
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-sys.path.append('..\QLearning_Agent')
 from qrllearner import GroverQlearner
 from sidewalkdemo import *
 

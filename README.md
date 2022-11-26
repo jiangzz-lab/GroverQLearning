@@ -3,10 +3,16 @@ Implement Q learning algorithms based on the Grover algorithm
 
 1. Install the package qrllearner <br />
 In terminal, type: <br />
-pip install qrllearner <br />
+~~~
+pip install qrllearner
+~~~
 
 2. Train the Grover agent with the FrozenLake environment with gym <br />
-Install the gym package by typing pip install gym in terminal <br />
+Install the gym package by typing 
+~~~
+pip install gym
+~~~ 
+in terminal <br />
 Run the following code in a python notebook:
 ~~~
 import numpy as np
@@ -38,7 +44,10 @@ plt.plot(steps_in_all_epochs)
 ~~~
 
 3. Train the Grover agent with the custome sidewalk environment <br />
-install the custom sidewalk environment: pip install sidewalkdemo <br />
+install the custom sidewalk environment: 
+~~~
+pip install sidewalkdemo
+~~~
 run the following code in a python notebook
 ~~~
 import matplotlib.pyplot as plt

@@ -9,11 +9,11 @@ pip install qiskit
 ~~~
 
 2. Train the Grover agent with the FrozenLake environment with gym <br />
-Install the gym package by typing 
+Install the gym package by typing the following command in terminal.
 ~~~
 pip install gym
 ~~~ 
-in terminal <br />
+
 Run the following code in a python notebook:
 ~~~
 import numpy as np

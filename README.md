@@ -1,10 +1,11 @@
 # GroverQLearning
 Implement Q learning algorithms based on the Grover algorithm
 
-1. Install the package qrllearner <br />
+1. Install the package qrllearner and its dependency qiskit <br />
 In terminal, type: <br />
 ~~~
 pip install qrllearner
+pip install qiskit
 ~~~
 
 2. Train the Grover agent with the FrozenLake environment with gym <br />
@@ -41,6 +42,9 @@ steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
 
 # plot step vs epoch
 plt.plot(steps_in_all_epochs)
+
+# plot the goal_reached vs epochs
+plt.scatter(range(len(target_reached_in_all_epochs)),target_reached_in_all_epochs)
 ~~~
 
 3. Train the Grover agent with the custome sidewalk environment <br />

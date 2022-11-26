@@ -42,10 +42,18 @@ steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
 
 # plot step vs epoch
 plt.plot(steps_in_all_epochs)
-
-# plot the goal_reached vs epochs
+plt.xlabel('Epoch')
+plt.ylabel('Steps')
+plt.show()
+# plot target reached vs epoch
 plt.scatter(range(len(target_reached_in_all_epochs)),target_reached_in_all_epochs)
+plt.xlabel('Epoch')
+plt.ylabel('Target Reached')
+plt.show()
 ~~~
+<img src="./Resources/frozenlake_goalReached_vs_epoch.png"
+     alt="Markdown Monster icon"
+     style="float: left; margin-right: 10px;" />
 
 3. Train the Grover agent with the custome sidewalk environment <br />
 install the custom sidewalk environment: 

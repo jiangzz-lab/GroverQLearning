@@ -130,6 +130,8 @@ env_with_obstacle_test.plot_roadmap_with_trajectory('avoiding obstacles_Quantum 
 <img src="./Resources/avoiding_obstacles_quantum_agent.png"
      style="float: left; margin-right: 10px;" />
 
+### 4. Comparison with a classical Q-learner
+In package qrllearner, we also provide a classical learner class called ClassicalLearner with the same api. Run above examples by simply replacing GroverQlearner with  ClassicalLearner. However, the hyperparameters for the classical learner is different from those for the Grover learner. Fine tunning is needed to get better performence.
 
 
 [1] [Ganger, M. and Hu, W. International Journal of Intelligence Science, 9, 1-22 (2019)](https://www.scirp.org/html/1-1680231_89926.htm) 

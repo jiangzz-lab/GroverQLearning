@@ -60,7 +60,7 @@ from qrllearner import GroverQlearner
 envtest = gym.make("FrozenLake-v1", is_slippery=False, render_mode="ansi")
 
 # create GroverQlearner object as the agent
-Elliot = GroverQlearner(envtest)
+QuanAgent = GroverQlearner(envtest)
 
 # set hyperparameters for training
 hyperp = {'k': 0.1,
@@ -70,10 +70,10 @@ hyperp = {'k': 0.1,
           'max_epochs': 3000,
           'max_steps': 15}
 
-Elliot.set_hyperparams(hyperp)
+QuanAgent.set_hyperparams(hyperp)
 
 # train model
-steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
+steps_in_all_epochs,target_reached_in_all_epochs,_ = QuanAgent.train()
 
 # plot step vs epoch
 plt.plot(steps_in_all_epochs)
@@ -107,7 +107,7 @@ from sidewalkdemo import *
 env = side_walk_env_with_obstacle(50,15,12,2,0.2)
 # env.plot_roadmap()
 
-Elliot = GroverQlearner(env,env_type='local')
+QuanAgent = GroverQlearner(env,env_type='local')
 hyperp = {'k': 0.1,
           'alpha': 0.1,
           'gamma': 0.8,
@@ -116,15 +116,15 @@ hyperp = {'k': 0.1,
           'max_steps': 300}
 
 # set hyperparms
-Elliot.set_hyperparams(hyperp)
+QuanAgent.set_hyperparams(hyperp)
 # TRAIN
-steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
+steps_in_all_epochs,target_reached_in_all_epochs,_ = QuanAgent.train()
 
 # print(Elliot.Q_values)
 
 # plot the trajectory after training
 env_with_obstacle_test = side_walk_env_with_obstacle(p_obstacle=0.15)
-trajectory = env_with_obstacle_test.trajectory(Elliot.Q_values)
+trajectory = env_with_obstacle_test.trajectory(QuanAgent.Q_values)
 env_with_obstacle_test.plot_roadmap_with_trajectory('avoiding obstacles_Quantum agent',trajectory)
 ~~~
 <img src="./Resources/avoiding_obstacles_quantum_agent.png"

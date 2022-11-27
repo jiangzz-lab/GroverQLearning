@@ -1,14 +1,21 @@
 # GroverQLearning
-Implement Q learning algorithms based on the Grover algorithm
+## Introduction
+The GroverQLearning is a reinforcement learning with a quantum agent that implements the Grover's algorithm. In this project, we adopt the widely used reinforcement Q-learning algorithm which has the following architecture:
+<img src="./Resources/RL_architecture.png"
+     style="float: left; margin-right: 10px;"
+     width="300" 
+     align=center />
+<br />
+## Implement Q learning algorithms based on the Grover algorithm
 
-1. Install the package qrllearner and its dependency qiskit <br />
+### 1. Install the package qrllearner and its dependency qiskit <br />
 In terminal, type: <br />
 ~~~
 pip install qrllearner
 pip install qiskit
 ~~~
 
-2. Train the Grover agent with the FrozenLake environment with gym <br />
+### 2. Train the Grover agent with the FrozenLake environment with gym <br />
 Install the gym package by typing the following command in terminal.
 ~~~
 pip install gym
@@ -55,8 +62,8 @@ plt.show()
      style="float: left; margin-right: 10px;" />
 <img src="./Resources/frozenlake_goalReached_vs_epoch.png"
      style="float: left; margin-right: 10px;" />
-
-3. Train the Grover agent with the custome sidewalk environment <br />
+<br />
+### 3. Train the Grover agent with the custome sidewalk environment <br />
 install the custom sidewalk environment: 
 ~~~
 pip install sidewalkdemo

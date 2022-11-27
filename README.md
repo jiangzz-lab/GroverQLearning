@@ -36,10 +36,12 @@ but with some modifications. The update of the V-values requires a search for ma
 
 ## Package installation and examples
 
-### 1. Install the package qrllearner and its dependency qiskit <br />
+### 1. Install the package qrllearner and its dependencies <br />
 In terminal, type: <br />
 ~~~python
 pip install qrllearner
+pip install numpy
+pip install matplotlib
 pip install qiskit
 ~~~
 

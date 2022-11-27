@@ -6,7 +6,28 @@ The GroverQLearning is a reinforcement learning with a quantum agent that implem
      width="300" 
      align=center />
 <br />
+The key step in this Q-learning is to update a so-called Q-function which takes a state-action pair as its argument, namely $Q(s,a)$. The update rule is the following
+$$Q(s,a)\leftarrow (1-\alpha)Q(s,a) + \alpha\left(r(s,a)+\gamma \max_{a'}Q(s,a')\right)$$
+where $\alpha$ is the learning rate, $r(s,a)$ is the reward or penalty for taking action $a$ at state $s$, and $\gamma$ is a discount factor for convergence. The meaning of the Q-function is the expectation of total reward after taking action $a$ at state $s$. So, the goal is to learn the Q-function such that a good action gives high Q-value for a given state.
+<br />
+What an agent needs to do is that, given a Q-function, it should observe the environment and choose an action to perform then update the Q-function based on the reward it gets. There are many ways to implements this agent. A simple classical agent would be a search algorithm directly searching for the action that maximizes the Q-function for a given state. In this project, we instead use the quantum search algorithm called [Grover's algorithm](https://en.wikipedia.org/wiki/Grover%27s_algorithm) to do the job. The basic idea is to first encode the actions for a given state $s$ into a quantum state $|a_s\rangle$ and to update it using Grover iterations, which looks like
+<img src="./Resources/Grover_iteration.png"
+     style="float: left; margin-right: 10px;"
+     width="800" 
+     align=center />
+<br />
+The Grover length $L$ is how many iterations we need to perform the Grover oracle, which is related to the reward and the learned Q-function.
+
 ## Implement Q learning algorithms based on the Grover algorithm
+We adopt the algorithm from Ref. [1] which reads
+<img src="./Resources/QQRL.png"
+     style="float: left; margin-right: 10px;"
+     width="800" 
+     align=center />
+<br />
+but with some modifications. The update of the V-values requires a search for maximal values in Q-function. To avoid that, we directly update $V(s)$ using $Q(s,a)$ with $|a\rangle$ being the measured results when given state $s$. The quantum mechanics ensure us with high possibilities to get $\max_{a}Q(s,a)$.
+
+## Package installation and examples
 
 ### 1. Install the package qrllearner and its dependency qiskit <br />
 In terminal, type: <br />
@@ -101,3 +122,7 @@ env_with_obstacle_test.plot_roadmap_with_trajectory('avoiding obstacles_Quantum 
 ~~~
 <img src="./Resources/avoiding_obstacles_quantum_agent.png"
      style="float: left; margin-right: 10px;" />
+
+
+
+[1] [Ganger, M. and Hu, W. International Journal of Intelligence Science, 9, 1-22 (2019)](https://www.scirp.org/html/1-1680231_89926.htm) 

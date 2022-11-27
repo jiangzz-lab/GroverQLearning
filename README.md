@@ -35,7 +35,7 @@ We adopt the algorithm from Ref. [1] which reads
 but with some modifications. The update of the V-values requires a search for maximal values in Q-function. To avoid that, we directly update $V(s)$ using $Q(s,a)$ with $|a\rangle$ being the measured results when given state $s$. The quantum mechanics ensure us with high possibilities to get $\max_{a}Q(s,a)$.
 <br />
 <br />
-More information can be found in the [project report](./Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf)
+More information can be found in the [project report](./QLearning_Agent/QQL_learner_trainer.py)
 
 ## Package installation and examples
 

@@ -77,7 +77,7 @@ from sidewalkdemo import *
 
 # set up and visualize the road map
 env = side_walk_env_with_obstacle(50,15,12,2,0.2)
-env.plot_roadmap()
+# env.plot_roadmap()
 
 Elliot = GroverQlearner(env,env_type='local')
 hyperp = {'k': 0.1,

@@ -12,6 +12,7 @@ The key step in this Q-learning is to update a so-called Q-function which takes 
 $$Q(s,a)\leftarrow (1-\alpha)Q(s,a) + \alpha\left(r(s,a)+\gamma \max_{a'}Q(s,a')\right)$$
 where $\alpha$ is the learning rate, $r(s,a)$ is the reward or penalty for taking action $a$ at state $s$, and $\gamma$ is a discount factor for convergence. The meaning of the Q-function is the expectation of total reward after taking action $a$ at state $s$. So, the goal is to learn the Q-function such that a good action gives high Q-value for a given state.
 <br />
+<br />
 What an agent needs to do is that, given a Q-function, it should observe the environment and choose an action to perform then update the Q-function based on the reward it gets. There are many ways to implements this agent. A simple classical agent would be a search algorithm directly searching for the action that maximizes the Q-function for a given state. In this project, we instead use the quantum search algorithm called [Grover's algorithm](https://en.wikipedia.org/wiki/Grover%27s_algorithm) to do the job. The basic idea is to first encode the actions for a given state $s$ into a quantum state $|a_s\rangle$ and to update it using Grover iterations, which looks like
 
 <img src="./Resources/Grover_iteration.png"

@@ -51,8 +51,9 @@ plt.xlabel('Epoch')
 plt.ylabel('Target Reached')
 plt.show()
 ~~~
+<img src="./Resources/frozenlake_step_vs_epoch.png"
+     style="float: left; margin-right: 10px;" />
 <img src="./Resources/frozenlake_goalReached_vs_epoch.png"
-     alt="Markdown Monster icon"
      style="float: left; margin-right: 10px;" />
 
 3. Train the Grover agent with the custome sidewalk environment <br />
@@ -64,8 +65,6 @@ run the following code in a python notebook
 ~~~
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-sys.path.append('..\QLearning_Agent')
 from qrllearner import GroverQlearner
 from sidewalkdemo import *
 
@@ -86,6 +85,5 @@ Elliot.set_hyperparams(hyperp)
 # TRAIN
 steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
 
-plt.plot(steps_in_all_epochs)
 print(Elliot.Q_values)
 ~~~

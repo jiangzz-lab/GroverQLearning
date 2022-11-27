@@ -85,6 +85,5 @@ Elliot.set_hyperparams(hyperp)
 # TRAIN
 steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
 
-plt.plot(steps_in_all_epochs)
 print(Elliot.Q_values)
 ~~~

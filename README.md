@@ -38,19 +38,19 @@ but with some modifications. The update of the V-values requires a search for ma
 
 ### 1. Install the package qrllearner and its dependency qiskit <br />
 In terminal, type: <br />
-~~~
+~~~python
 pip install qrllearner
 pip install qiskit
 ~~~
 
 ### 2. Train the Grover agent with the FrozenLake environment with gym <br />
 Install the gym package by typing the following command in terminal.
-~~~
+~~~python
 pip install gym
 ~~~ 
 
 Run the following code in a python notebook:
-~~~
+~~~python
 import numpy as np
 import matplotlib.pyplot as plt
 import gym
@@ -92,12 +92,12 @@ plt.show()
      style="float: left; margin-right: 10px;" />
 <br />
 ### 3. Train the Grover agent with the custome sidewalk environment <br />
-install the custom sidewalk environment: 
-~~~
+Install the custom sidewalk environment: 
+~~~python
 pip install sidewalkdemo
 ~~~
 run the following code in a python notebook
-~~~
+~~~python
 import matplotlib.pyplot as plt
 import numpy as np
 from qrllearner import GroverQlearner

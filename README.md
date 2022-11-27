@@ -57,10 +57,10 @@ import gym
 from qrllearner import GroverQlearner
 
 # setup FrozenLake environment
-envtest = gym.make("FrozenLake-v1", is_slippery=False, render_mode="ansi")
+env = gym.make("FrozenLake-v1", is_slippery=False, render_mode="ansi")
 
 # create GroverQlearner object as the agent
-QuanAgent = GroverQlearner(envtest)
+QuanAgent = GroverQlearner(env)
 
 # set hyperparameters for training
 hyperp = {'k': 0.1,
@@ -73,15 +73,15 @@ hyperp = {'k': 0.1,
 QuanAgent.set_hyperparams(hyperp)
 
 # train model
-steps_in_all_epochs,target_reached_in_all_epochs,_ = QuanAgent.train()
+steps_vs_epochs,target_reached_vs_epochs,_ = QuanAgent.train()
 
 # plot step vs epoch
-plt.plot(steps_in_all_epochs)
+plt.plot(steps_vs_epochs)
 plt.xlabel('Epoch')
 plt.ylabel('Steps')
 plt.show()
 # plot target reached vs epoch
-plt.scatter(range(len(target_reached_in_all_epochs)),target_reached_in_all_epochs)
+plt.scatter(range(len(target_reached_vs_epochs)),target_reached_vs_epochs)
 plt.xlabel('Epoch')
 plt.ylabel('Target Reached')
 plt.show()

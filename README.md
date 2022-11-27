@@ -44,6 +44,7 @@ pip install numpy
 pip install matplotlib
 pip install qiskit
 ~~~
+Source code: [QQL_learner_trainer.py](./QLearning_Agent/QQL_learner_trainer.py)
 
 ### 2. Train the Grover agent with the FrozenLake environment with gym <br />
 Install the gym package by typing the following command in terminal.
@@ -98,7 +99,8 @@ Install the custom sidewalk environment:
 ~~~python
 pip install sidewalkdemo
 ~~~
-run the following code in a python notebook
+Source code: [SideWalkEnv.py](./sidewalk_env/SideWalkEnv.py) <br />
+Run the following code in a python notebook
 ~~~python
 import matplotlib.pyplot as plt
 import numpy as np

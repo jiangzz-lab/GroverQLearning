@@ -44,6 +44,7 @@ pip install numpy
 pip install matplotlib
 pip install qiskit
 ~~~
+Source code: [QQL_learner_trainer.py](./QLearning_Agent/QQL_learner_trainer.py)
 
 ### 2. Train the Grover agent with the FrozenLake environment with gym <br />
 Install the gym package by typing the following command in terminal.
@@ -98,7 +99,8 @@ Install the custom sidewalk environment:
 ~~~python
 pip install sidewalkdemo
 ~~~
-run the following code in a python notebook
+Source code: [SideWalkEnv.py](./sidewalk_env/SideWalkEnv.py) <br />
+Run the following code in a python notebook
 ~~~python
 import matplotlib.pyplot as plt
 import numpy as np
@@ -131,7 +133,7 @@ env_with_obstacle_test.plot_roadmap_with_trajectory('avoiding obstacles_Quantum 
 ~~~
 <img src="./Resources/avoiding_obstacles_quantum_agent.png"
      style="float: left; margin-right: 10px;" />
-The above example shows a special task for avoiding obstacles when going through the sidewalk. We also provide another task for picking up litters along the sidewalk. Examples can be found in file [QLearning_sidewalk_picking_up_litters_quantum_agent](./sidewalk_env/QLearning_sidewalk_picking_up_litters_quantum_agent.ipynb)
+The above example shows a special task for avoiding obstacles when going through the sidewalk. We also provide another task for picking up litters along the sidewalk. Examples can be found in file [QLearning_sidewalk_picking_up_litters_quantum_agent.ipynb](./sidewalk_env/QLearning_sidewalk_picking_up_litters_quantum_agent.ipynb)
 
 ### 4. Comparison with a classical Q-learner
 In package qrllearner, we also provide a classical learner class called `ClassicalLearner` with the same api. Run above examples by simply replacing `GroverQlearner` with `ClassicalLearner`. However, the hyperparameters for the classical learner is different from those for the Grover learner. Fine tunning is needed to get better performence.

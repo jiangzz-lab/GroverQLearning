@@ -60,7 +60,7 @@ from qrllearner import GroverQlearner
 env = gym.make("FrozenLake-v1", is_slippery=False, render_mode="ansi")
 
 # create GroverQlearner object as the agent
-QuanAgent = GroverQlearner(env)
+QuanAgent = GroverQlearner(env,env_type='global')
 
 # set hyperparameters for training
 hyperp = {'k': 0.1,

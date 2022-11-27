@@ -85,5 +85,12 @@ Elliot.set_hyperparams(hyperp)
 # TRAIN
 steps_in_all_epochs,target_reached_in_all_epochs,_ = Elliot.train()
 
-print(Elliot.Q_values)
+# print(Elliot.Q_values)
+
+# plot the trajectory after training
+env_with_obstacle_test = side_walk_env_with_obstacle(p_obstacle=0.15)
+trajectory = env_with_obstacle_test.trajectory(Elliot.Q_values)
+env_with_obstacle_test.plot_roadmap_with_trajectory('avoiding obstacles_Quantum agent',trajectory)
 ~~~
+<img src="./Resources/avoiding_obstacles_quantum_agent.png"
+     style="float: left; margin-right: 10px;" />

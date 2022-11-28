@@ -104,7 +104,9 @@ Install the custom sidewalk environment:
 pip install sidewalkdemo
 ~~~
 Source code: [SideWalkEnv.py](./sidewalk_env/SideWalkEnv.py) <br />
-This is a local environment where the agent can only see its neighboring four sites and the environment will change after taking actions. For more information, please see the [project report](./GroverQLearning/blob/main/Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) (or [project report](./Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) if the first link doesn't work).
+
+This is a local environment where the agent can only see its neighboring four sites and the environment will change after taking actions. For more information, please see the [project report](./GroverQLearning/blob/main/Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) (or [project report](./Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) if the link doesn't work).<br />
+<br />
 Run the following code in a python notebook
 ~~~python
 import matplotlib.pyplot as plt

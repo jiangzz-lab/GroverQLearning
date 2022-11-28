@@ -129,7 +129,7 @@ hyperp = {'k': 0.1,
 # set hyperparms
 QuanAgent.set_hyperparams(hyperp)
 # TRAIN
-steps_in_all_epochs,target_reached_in_all_epochs,_ = QuanAgent.train()
+QuanAgent.train()
 
 # print(Elliot.Q_values)
 

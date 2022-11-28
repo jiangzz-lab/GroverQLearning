@@ -132,8 +132,6 @@ QuanAgent.set_hyperparams(hyperp)
 # TRAIN
 QuanAgent.train()
 
-# print(Elliot.Q_values)
-
 # plot the trajectory after training
 env_with_obstacle_test = side_walk_env_with_obstacle(p_obstacle=0.15)
 trajectory = env_with_obstacle_test.trajectory(QuanAgent.Q_values)

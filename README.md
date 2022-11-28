@@ -34,6 +34,7 @@ We adopt the algorithm from Ref. [1] which reads
 
 but with some modifications. The update of the V-values requires a search for maximal values in Q-function. To avoid that, we directly update $V(s)$ using $Q(s,a)$ with $|a\rangle$ being the measured results when given state $s$. The quantum mechanics ensure us with high possibilities to get $\max_{a}Q(s,a)$.
 <br />
+Our Groverlearner code was partly inspired by Ref. [2].
 <br />
 More information can be found in the [project report](./GroverQLearning/blob/main/Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) or [project report](./Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) if the first link doesn't work.
 
@@ -147,3 +148,4 @@ In package qrllearner, we also provide a classical learner class called `Classic
 
 
 [1]: [Ganger, M. and Hu, W. International Journal of Intelligence Science, 9, 1-22 (2019)](https://www.scirp.org/html/1-1680231_89926.htm) 
+[2]: [QRL repository](https://github.com/LauraGentini/QRL)

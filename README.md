@@ -54,6 +54,7 @@ Install the gym package by typing the following command in terminal.
 ~~~python
 pip install gym
 ~~~ 
+We will use the [FrozenLake](https://www.gymlibrary.dev/environments/toy_text/frozen_lake/) environment, which is a global environment, i.e., the agent can see the whole enviroment (contrast to the local environment where the agent can only see its neighboring environment, which we will discuss in the next section).
 
 Run the following code in a python notebook:
 ~~~python

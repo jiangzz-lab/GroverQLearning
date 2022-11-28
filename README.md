@@ -147,5 +147,5 @@ The above example shows a special task for avoiding obstacles when going through
 In package qrllearner, we also provide a classical learner class called `ClassicalLearner` with the same api. Run above examples by simply replacing `GroverQlearner` with `ClassicalLearner`. However, the hyperparameters for the classical learner is different from those for the Grover learner. Fine tunning is needed to get better performence.
 
 
-[1]: [Ganger, M. and Hu, W. International Journal of Intelligence Science, 9, 1-22 (2019)](https://www.scirp.org/html/1-1680231_89926.htm) 
+[1]: [Ganger, M. and Hu, W. International Journal of Intelligence Science, 9, 1-22 (2019)](https://www.scirp.org/html/1-1680231_89926.htm) <br />
 [2]: [QRL repository](https://github.com/LauraGentini/QRL)

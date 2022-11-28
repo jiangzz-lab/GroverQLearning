@@ -54,7 +54,7 @@ Install the gym package by typing the following command in terminal.
 ~~~python
 pip install gym
 ~~~ 
-We will use the [FrozenLake](https://www.gymlibrary.dev/environments/toy_text/frozen_lake/) environment, which is a global environment, i.e., the agent can see the whole enviroment (contrast to the local environment where the agent can only see its neighboring environment, which we will discuss in the next section).
+We will use the [FrozenLake](https://www.gymlibrary.dev/environments/toy_text/frozen_lake/) environment, which is a global environment, i.e., the agent can see the whole enviroment (contrast to a local environment where the agent can only see its neighboring environment, which we will discuss in the next section).
 
 Run the following code in a python notebook:
 ~~~python
@@ -104,6 +104,7 @@ Install the custom sidewalk environment:
 pip install sidewalkdemo
 ~~~
 Source code: [SideWalkEnv.py](./sidewalk_env/SideWalkEnv.py) <br />
+This is a local environment where the agent can only see its neighboring four sites and the environment will change after taking actions. For more information, please see the [project report](./GroverQLearning/blob/main/Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) (or [project report](./Resources/Grover_Method_for_Quantum_Reinforcement_Learning.pdf) if the first link doesn't work).
 Run the following code in a python notebook
 ~~~python
 import matplotlib.pyplot as plt
